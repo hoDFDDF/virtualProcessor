@@ -1,0 +1,44 @@
+CC = g++
+
+
+CFLAGS = -c -IPROCESSOR\include_processor -ISTACK\include_Stack -Wshadow -Winit-self -Wredundant-decls -Wcast-align \
+         -Wundef -Wfloat-equal -Winline -Wunreachable-code \
+         -Wmissing-declarations -Wmissing-include-dirs -Wswitch-enum \
+         -Wswitch-default -Weffc++ -Wmain -Wextra -Wall -g -pipe -fexceptions \
+         -Wcast-qual -Wconversion -Wctor-dtor-privacy -Wempty-body \
+         -Wformat-security -Wformat=2 -Wignored-qualifiers -Wlogical-op \
+         -Wno-missing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual \
+         -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing \
+         -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings -Werror=vla \
+         -D_DEBUG -D_EJUDGE_CLIENT_SIDE
+
+BUILTDIR = build
+BUILTDIR_PROCESSOR = $(BUILTDIR)\Processor_build
+BUILTDIR_STACK = $(BUILTDIR)/Stack_build
+EXECUTABLE = processor.exe
+OBJECTS_PROCESSOR = main.o CPU.o Calculator.o 
+OBJECTS_STACK = StackFuncs.o
+
+all: BUILTD $(EXECUTABLE)
+
+$(EXECUTABLE): $(addprefix $(BUILTDIR_PROCESSOR)/, $(OBJECTS_PROCESSOR)) $(addprefix $(BUILTDIR_STACK)/, $(OBJECTS_STACK))
+	$(CC) $(addprefix $(BUILTDIR_PROCESSOR)/, $(OBJECTS_PROCESSOR)) $(addprefix $(BUILTDIR_STACK)/, $(OBJECTS_STACK)) -o $(EXECUTABLE)
+
+BUILTD:
+	@if not exist "$(BUILTDIR_PROCESSOR)" mkdir "$(BUILTDIR_PROCESSOR)"
+	@if not exist "$(BUILTDIR_STACK)" mkdir "$(BUILTDIR_STACK)"
+
+
+$(BUILTDIR_STACK)/%.o: STACK/source_Stack/%.cpp
+	@echo "Compiling Stack: $< -> $@"
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILTDIR_PROCESSOR)/%.o: PROCESSOR/source_processor/%.cpp
+	@echo "Compiling Processor: $< -> $@"
+	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	@if exist "$(BUILTDIR)" rmdir /S /Q "$(BUILTDIR)"
+	@if exist "$(EXECUTABLE)" del "$(EXECUTABLE)"
+
+.PHONY: all clean BUILTD
