@@ -11,6 +11,16 @@
 #include "AsmFileParametrs.h"
 
 
+#define RESET_ALL       "\x1b[0m"
+#define COLOR_BLACK     "\x1b[30m"
+#define COLOR_RED       "\x1b[31m"
+#define COLOR_GREEN     "\x1b[32m"
+#define COLOR_YELLOW    "\x1b[33m"
+#define COLOR_BLUE      "\x1b[34m"
+#define COLOR_MAGENTA   "\x1b[35m"
+#define COLOR_CYAN      "\x1b[36m"
+#define COLOR_WHITE     "\x1b[37m"
+
 typedef int instraction_type;
 
 const int size_of_tempBuffer = 50;
@@ -22,7 +32,15 @@ enum Instractions{
     MUL,
     OUT,
     HLT,
+    PUSHR,
+    POPR,
     NO_INSTRUCTION
+};
+enum Regs{
+    RAX = 42,
+    RBX,
+    RCX,
+    NO_REGS
 };
 
 enum AssemblerErrors_t{
@@ -38,6 +56,7 @@ struct ProcessorInstructions{
     size_t index_instr_buffer;
     char* temp_buffer_command_name ;
     size_t str_arg;
+    Regs reg_val;
 };
 
 void ReadTextFromAsmFile(ProcessorInstructions* instruction, AsmFileParams* asm_file_param);

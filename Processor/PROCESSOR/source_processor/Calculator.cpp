@@ -44,7 +44,7 @@ void ParseByteCodeCommands(Stack_t* stack_func_execute, ByteCodeFile* byte_code,
     } else if (strcmp("2", str_command) == 0 && nArguments == 1) {
         command_param->processor_command = POP;
         StackPop(stack_func_execute); 
-        
+    // заменить на сравнение значений
     } else if (strcmp("6", str_command) == 0 && nArguments == 1) {
         StackOut(stack_func_execute);
         command_param->command_value = OUT;
