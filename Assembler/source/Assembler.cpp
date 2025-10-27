@@ -22,10 +22,8 @@ void ReadTextFromAsmFile(ProcessorInstructions* instruction, AsmFileParams* asm_
         fprintf(stdout, "%s ", instruction->instr_buffer[index_of_arrPtr]);
     }
 
-    fclose(asm_file_ptr); 
+    fclose(asm_file_ptr);    
 }
-
-
 void WriteTranstaledComandToFile(ProcessorInstructions* instruction){
     FILE* byte_code_file_ptr = fopen("C:\\Users\\uranory32\\Documents\\GitHub\\virtualProcessor\\Processor\\ByteCode.txt", "w");
     if (byte_code_file_ptr == NULL) {
@@ -45,7 +43,6 @@ void WriteTranstaledComandToFile(ProcessorInstructions* instruction){
         else {
             fprintf(byte_code_file_ptr, "%d\n", instruction->code_array[index_code_array]);                            
         }
-        
     }
     fclose(byte_code_file_ptr);
 }
@@ -56,26 +53,11 @@ void cleanStrings(char* string){
     if ((pos = strchr(string, '\n')) != NULL ) *pos = '\0';
 }
 
-Instractions CommandParser(ProcessorInstructions* instruction, AsmFileParams* asm_file_param){
-    char str_command_name[40];
-    char command_param[32];
-    char  register_name[10];
+size_t ParseArgs(char* str_command_name, char* command_param, ProcessorInstructions* instruction){
 
-    //memset(str_command_name, 0, sizeof(str_command_name));
-    //memset(command_param, 0, sizeof(command_param));
-    //char* current_line = instruction->instr_buffer[instruction->index_instr_buffer];
-   // cleanStrings(current_line);
     int nArguments = sscanf(instruction->instr_buffer[instruction->index_instr_buffer], "%s %s",
-                                                   str_command_name, command_param);
-    
-    // TODO: ParseInstruction(str_command_name, command_param) {
-                // TODO: for const Command* const commands[12] = {{PUSH, "PUSH"}}   
-// }
-    Instractions enum_command_name = NO_INSTRUCTION;
-    instruction->reg_val = NO_REGS;
-    instruction->val = -1;
+                                                               str_command_name, command_param);
     if (nArguments == 2) {
-        instruction->val = atoi(command_param);
         instruction->str_arg = 2;
         // TODO: ParseArgument()
     } else if (nArguments == 1) { 
@@ -83,30 +65,42 @@ Instractions CommandParser(ProcessorInstructions* instruction, AsmFileParams* as
     } else {
         instruction->str_arg = 0;
     }
+    instruction->index_instr_buffer++;
+    return nArguments;//залупа, нахую тогда записывать в структуру.
+}
 
+Instractions CommandParser(ProcessorInstructions* instruction, Command* cmd){
+
+    char str_command_name[40] = {0};
+    char command_param[32] = {0};
+    size_t nArguments = ParseArgs(str_command_name, command_param, instruction);
+    // TODO: ParseInstruction(str_command_name, command_param) {
+    // TODO: for const Command* const commands[12] = {{PUSH, "PUSH"}}     
+    Instractions enum_command_name = NO_INSTRUCTION;
+    instruction->reg_val = NO_REGS;
+    instruction->val = -1;
     // TODO: const Registers* const regs[4] = {{RAX, "RAX"}} instruction->reg_val = regs[i].enum_name
-    
-    if (strcmp("PUSH", str_command_name) == 0 && nArguments == 2) {
-        enum_command_name = PUSH;
-        fprintf(stderr, "%s", "AAA\n");
-    } else if (strcmp("POP", str_command_name) == 0 && nArguments == 1) {
-        enum_command_name = POP;
-    } else if (strcmp("POPR", str_command_name) == 0 && nArguments ==  2 && strcmp("RAX", command_param) == 0){
-        enum_command_name = POPR;
-        instruction->reg_val = RAX;
-    } else if (strcmp("PUSHR", str_command_name) == 0 && nArguments ==  2 && strcmp("RBX", command_param) == 0){
-        enum_command_name = PUSHR;
-        instruction->reg_val = RBX;
-        fprintf(stdout, COLOR_RED"%s = ");
-    } else if (strcmp("ADD", str_command_name) == 0 && nArguments == 1) {
-        enum_command_name = ADD;
-    } else if (strcmp("HLT", str_command_name) == 0 && nArguments == 1) {
-        enum_command_name = HLT;
-    } else if (strcmp("OUT", str_command_name) == 0 && nArguments == 1) {
-        enum_command_name = OUT;
-    } else {
-        fprintf(stdin, "Invalid instruction");
+    // cделать цикл.
+    for (size_t index = 0; index < command_arr_size; index++) { 
+        int command_check = strcmp(commands[index].cmnd_name, str_command_name);
+        if (command_check == 0) {
+            enum_command_name = commands[index].enum_cmnd_name;
+            break;
+        }   
+    }
 
+    if (nArguments == 2) {
+        for (size_t regs_index = 0; regs_index < register_array_size; regs_index++) {
+            int reg_arg_check = strcmp(registers[regs_index].reg_name, command_param);
+            if (reg_arg_check == 0) { 
+                instruction->reg_val = registers[regs_index].enum_reg_name;
+                break;
+            }
+        }
+    }
+
+    if (nArguments == 2 && instruction->reg_val == NO_REGS) {
+        instruction->val = atoi(command_param);
     }
 
     fprintf(stdout, "INDEX_INSTR_BUFFER = [%d]\n",  instruction->index_instr_buffer);
@@ -118,40 +112,36 @@ Instractions CommandParser(ProcessorInstructions* instruction, AsmFileParams* as
     fprintf(stderr, "comand_value = %d\n", instruction->val);
     fprintf(stdout, "HOW MANY ARGS = [%d]\n", nArguments);
     fprintf(stdout,  "VALUE OF REG ARG = [%d]", instruction->reg_val);
-    instruction->index_instr_buffer++;
+
     return enum_command_name;
 }
 
+void FillCodeArray(ProcessorInstructions* instruction, AsmFileParams* asm_file_param, Command* cmd){
+    instruction->code_array = (int*)calloc(256, sizeof(int));
 
-void FillCodeArray(ProcessorInstructions* instruction, AsmFileParams* asm_file_param){
-    instruction->code_array = (int*)calloc(1000, sizeof(int));
     instruction->index_instr_buffer = 0;
     size_t file_string_count = asm_file_param->asm_nStrings;
     instruction->code_array_size = 0;
     for (size_t nArgs =  0; nArgs < file_string_count; nArgs++) {
 
         // TODO: массив структур для меток. Из имени метки и ее ip
-        
-        Instractions instruction_name = CommandParser(instruction,asm_file_param);
-        fprintf(stdout, "Got the instruction with name = {%d}\n\n", instruction_name);
-        
-        if (instruction->str_arg == 2 && instruction->reg_val == NO_REGS) {
-            instruction->code_array[instruction->code_array_size] = (int)instruction_name;
-            
-            instruction->code_array[instruction->code_array_size + 1] = instruction->val;
-            instruction->code_array_size += 2;
 
-        } else if (instruction->str_arg == 2 && instruction->reg_val != NO_REGS) {
+        Instractions instruction_name = CommandParser(instruction, cmd);
+        fprintf(stdout, "Got the instruction with name = {%d}\n\n", instruction_name);
+        /// переделай выглядит уебищно
+        if (instruction->str_arg == 2) {
             instruction->code_array[instruction->code_array_size] = (int)instruction_name;
-            instruction->code_array[instruction->code_array_size + 1] = (int)instruction->reg_val;
+
+            instruction->code_array[instruction->code_array_size + 1] = (instruction->reg_val != NO_REGS) ?
+            (int)instruction->reg_val : instruction->val;
+
             instruction->code_array_size += 2;
         } else {
             instruction->code_array[instruction->code_array_size] = (int)instruction_name;
             instruction->code_array_size++;
         }
 
-        fprintf(stdout, "What code of instruction was put in array_code = %d\n", instruction->code_array[nArgs]);
-        
+        fprintf(stdout, "What code of instruction was put in array_code = %d\n", instruction->code_array[nArgs]);   
     }
     fprintf(stdout, "Number of command in array_command = {%d}", instruction->code_array_size);
     for (size_t index_code_array = 0; index_code_array < instruction->code_array_size; index_code_array++) {

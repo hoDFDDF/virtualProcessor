@@ -34,6 +34,7 @@ enum Instractions{
     HLT,
     PUSHR,
     POPR,
+    DIV,
     NO_INSTRUCTION
 };
 enum Regs{
@@ -58,10 +59,39 @@ struct ProcessorInstructions{
     size_t str_arg;
     Regs reg_val;
 };
+struct Registers{
+    Regs enum_reg_name;
+    const char* reg_name;
+};
+struct Command{
+    Instractions enum_cmnd_name;
+    const char* cmnd_name;
+};
+struct BuffersStorage{
+    char* command_buffer;
+    char* args_buffer;
+};
+const size_t command_arr_size = 7;
+const Command commands[command_arr_size] = {{PUSH,"PUSH"},
+                                            {POP,  "POP"},
+                                            {OUT,  "OUT"},
+                                            {HLT,  "HLT"},
+                                            {ADD,  "ADD"},
+                                            {PUSHR, "PUSHR"},
+                                            {POPR, "POPR"},
+                                            
+                                                    
+};
+const size_t register_array_size = 3;
+const Registers registers[register_array_size] = {{RAX, "RAX"},
+                                                {RBX, "RBX"},
+                                                {RCX, "RCX"}
+}; 
 
+size_t ParseArgs(char* str_command_name, char* command_param, ProcessorInstructions* instruction);                                        
 void ReadTextFromAsmFile(ProcessorInstructions* instruction, AsmFileParams* asm_file_param);
-Instractions CommandParser(ProcessorInstructions* instruction, AsmFileParams* asm_file_param);
-void FillCodeArray(ProcessorInstructions* instruction, AsmFileParams* asm_file_param);
+Instractions CommandParser(ProcessorInstructions* instruction, Command* cmd);
+void FillCodeArray(ProcessorInstructions* instruction, AsmFileParams* asm_file_param, Command* cmd);
 void WriteTranstaledComandToFile(ProcessorInstructions* instruction);
 
 #endif //_ASSEMBLER_TRAMSLATOR_

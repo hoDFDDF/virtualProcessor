@@ -2,65 +2,73 @@
 #include "Calculator.h"
 #include "StackFuncs.h"
 
-void cleanStrings(char* string){
-    char* pos;
-    if ((pos = strchr(string, '\r')) != NULL ) *pos = '\0';
-    if ((pos = strchr(string, '\n')) != NULL ) *pos = '\0';
-}
 
-void ParseByteCodeCommands(Stack_t* stack_func_execute, ByteCodeFile* byte_code, Command_parametrs* command_param){
+void ParseByteCodeCommands(Stack_t* stack_func_execute, ByteCodeFile* byte_code, ExecutableInstructions* instr_command, Register* regs_param){
+    FILE* file_ptr = fopen("ByteCode.txt", "w");
+    int str_command[40];
+    int command_arg[40];
 
-    char str_command[40];
-    char command_arg[40];
-
-    memset(str_command, 0, sizeof(str_command));
-    memset(command_arg, 0, sizeof(command_arg));
-    char* current_line = byte_code->byteCode_buffer_ptr[byte_code->str_index];
-    cleanStrings(current_line);
-    int nArguments = sscanf(byte_code->byteCode_buffer_ptr[byte_code->str_index], "%s %s",
+    int nArguments = sscanf(byte_code->byteCode_buffer_ptr[byte_code->str_index], "%d %d",
                                                                str_command, command_arg);
- 
+    
     fprintf(stdout, "nArguments = %d\n", nArguments);
     fprintf(stdout, "String in byte code file = %s\n [%zu]", byte_code->byteCode_buffer_ptr[byte_code->str_index],
                                                                                             byte_code->str_index);
-    command_param->processor_command = NO_COMMAND;
-    
-    char* endptr;
-    if (nArguments == 2) {
-        fprintf(stdout, "command_arg = '%s'\n", command_arg);
-        command_param->command_value = strtol(command_arg, &endptr, 10);
-        fprintf(stdout, "Value of arg(atoi) = %d\n", command_param->command_value);
-    } else if (nArguments == 1) { 
-        command_param->isCommand = 1;
-    } else {
-       command_param->isCommand = 0; 
-    }
-    
-    if (strcmp("1", str_command) == 0 && nArguments == 2) {
-        command_param->processor_command = PUSH;
+   
+    char* cmd_endptr;
+    char* arg_endptr;
+    instr_command->enum_processor_command = NO_COMMAND;
+    regs_param->reg_val = NO_REGS;
+//
+//
+    //    for (size_t index = 0; index < command_arr_size; index++) { 
+    //    int command_check = strcmp(commands[index].cmnd_name, str_command_name);
+    //    if (command_check == 0) {
+    //        enum_command_name = commands[index].enum_cmnd_name;
+    //        break;
+    //    }   
+    //}
+//
+    //if (nArguments == 2) {
+    //    for (size_t regs_index = 0; regs_index < register_array_size; regs_index++) {
+    //        int reg_arg_check = strcmp(registers[regs_index].reg_name, command_param);
+    //        if (reg_arg_check == 0) { 
+    //            instruction->reg_val = registers[regs_index].enum_reg_name;
+    //            break;
+    //        }
+    //    }
+    //}
+//
+    //if (nArguments == 2 && instruction->reg_val == NO_REGS) {
+    //    instruction->val = atoi(command_param);
+    //}
+//
 
-        StackPush(stack_func_execute, command_param->command_value);
-        fprintf(stderr, "%s", "AAA\n");
-    } else if (strcmp("2", str_command) == 0 && nArguments == 1) {
-        command_param->processor_command = POP;
-        StackPop(stack_func_execute); 
-    // заменить на сравнение значений
-    } else if (strcmp("6", str_command) == 0 && nArguments == 1) {
-        StackOut(stack_func_execute);
-        command_param->command_value = OUT;
+    for (size_t index_command = 0; index_command < instruction_array_size; index_command++) {
         
-    } else if (strcmp("3", str_command) == 0 && nArguments == 1) {
-        StackAdd(stack_func_execute);
-        command_param->command_value = ADD;
-        
-    } else if (strcmp("7", str_command) == 0 && nArguments == 1) {
-        fprintf(stdout, "%s", "Command HLT was pushed, end of program.....");
-        exit(EXIT_SUCCESS); 
-        command_param->command_value = HLT;
-        
-    } else {
-        fprintf(stdin, "Invalid instruction");
+        //int arg = strtol(command_arg, &arg_endptr, 10);
+        if (instruction[index_command].command_value == str_command) { 
+            
+            instr_command->enum_processor_command = instruction[index_command].enum_processor_command;
+            instr_command->execute_func = instruction[index_command].execute_func;
+            //instr_command->arg_value = arg;
+        }
     }
+    
+
+      if (nArguments == 2)
+            for (size_t regs_index = 0; regs_index < regs_size; regs_index++) {
+            if (*command_arg == regs_param[regs_index].reg_val) { 
+                instruction->reg_val = regs[regs_index].reg_enum;
+                break;
+            }
+        }
+    
+    if (nArguments == 2 && instruction->reg_enum == NO_REGS) {
+        instr_command
+    }
+        fprintf(stdout, "command_arg = '%s'\n", command_arg);
+    fclose(file_ptr);
 }
 
 void ExecuteCommandsInStack(Stack_t* stack_func_execute, ByteCodeFile* byte_code, Command_parametrs* command_param){

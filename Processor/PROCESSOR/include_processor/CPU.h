@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h> 
-
+#include <Stack.h>
 
 #define RESET_ALL       "\x1b[0m"
 #define COLOR_BLACK     "\x1b[30m"
@@ -24,10 +24,6 @@ struct ByteCodeFile{
     size_t str_index;
 };
 
-struct Register{
-    int* regs_array;
-    int* instruction_pointer;
-};
 
 enum Registers{
     RAX = 23,
@@ -35,7 +31,22 @@ enum Registers{
     RCX,
     RDX,
     ROX, // register for errors
+    NO_REGS
 };  
+
+
+struct Register{
+    int reg_val;
+    Registers reg_enum;
+    stack_data_type pushed_poped_regVal;
+    int* regs_array;
+};
+const size_t regs_size = 4;
+const Register regs[] = {{42, RAX},
+                         {43, RBX},
+                         {44, RCX},
+                         {45, RDX}
+};
 
 void ReadByteCode(ByteCodeFile* byte_code); 
 void GetByteCodeFileNumStrings(ByteCodeFile* byte_code);

@@ -25,5 +25,9 @@ StackErr_t StackDestruct(Stack_t* stack_clean);
 StackErr_t StackConstruct(Stack_t* param);
 StackErr_t StackAdd(Stack_t* param);
 StackErr_t StackOut(Stack_t* param);
-int StackHLT(int hlt_flag);
+StackErr_t StackMul(Stack_t* param);
+StackErr_t StackHlt(Stack_t* param);
+StackErr_t StackPUSHR(Stack_t* param, Register* regs_param);
+StackErr_t StackPOPR(Stack_t* param, Register* regs_param);
+
 #endif //_STACK_FUNCTIONS_

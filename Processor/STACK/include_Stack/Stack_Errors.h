@@ -17,7 +17,7 @@ enum StackErr_t{
 };
 
 struct ErrorInfo{
-    StackErr_t  code_error;
+    StackErr_t code_error;
     bool is_error;
     const char* error_message;
 };

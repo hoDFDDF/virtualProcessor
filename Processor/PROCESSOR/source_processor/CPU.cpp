@@ -17,8 +17,7 @@ void ReadByteCode(ByteCodeFile* byte_code){
     char temp_buffer[size_of_tempBuffer];
 
     for (size_t byte_code_file_count = 0; byte_code_file_count < byte_code->nStrings; 
-                                                            byte_code_file_count++) {
-                                                
+                                                            byte_code_file_count++) {                             
         fgets(temp_buffer, size_of_tempBuffer, byte_code_file_ptr);
         temp_buffer[strlen(temp_buffer) - 1] = '\0';
         byte_code->byteCode_buffer_ptr[byte_code_file_count] = strdup(temp_buffer);

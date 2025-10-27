@@ -1,5 +1,5 @@
 #include "StackFuncs.h"
-
+#include "CPU.h"
 StackErr_t StackConstruct(Stack_t* param){ 
     fprintf(stderr, "PENIS_CONSTRUCTOR1\n");
     if (param == nullptr) {
@@ -40,12 +40,9 @@ stack_data_type StackPop(Stack_t* param){//TODO return  elem
     }
     
     StackVerify(param);
-    return  ret_elem;
+    return ret_elem;
 }
-int StackHLT(int hlt_flag){
-    hlt_flag = 1;
-    return hlt_flag;
-}
+
 StackErr_t StackAdd(Stack_t* param){
     StackVerify(param);
     if (param->stack_size < 2) {
@@ -92,6 +89,13 @@ StackErr_t StackPush(Stack_t* param, stack_data_type input_value){
     return STACK_VERIFIDE;
 }
 
+StackErr_t StackHlt(Stack_t* param){
+    StackVerify(param);
+    fprintf(stdout, "%sCommand HLT pushed into stack\n");
+    exit(EXIT_SUCCESS);
+    return STACK_VERIFIDE;
+}
+
 StackErr_t StackResize(Stack_t* param){
     StackVerify(param);
     fprintf(stderr,"PENIS_STACK_RESIZE\n");
@@ -110,11 +114,24 @@ StackErr_t StackResize(Stack_t* param){
     } else {
         fprintf(stderr,"STACK_MEMORY_REALLOCATION_ERROR");   
     }
-
     StackVerify(param); 
     return STACK_VERIFIDE;
 }
-      
+
+StackErr_t StackPOPR(Stack_t* param, Register* regs_param){//написать ферификацию для регистров
+    StackVerify(param);
+    regs_param->pushed_poped_regVal = StackPop(param);
+    StackVerify(param);
+    return STACK_VERIFIDE;
+}
+
+StackErr_t StackPUSHR(Stack_t* param, Register* regs_param){
+    StackVerify(param);
+    StackPush(param, regs_param->pushed_poped_regVal);//проверить логику с current regs_param
+    StackVerify(param);
+    return STACK_VERIFIDE;
+}
+
 StackErr_t StackVerify(Stack_t* param){//TODO битовые сдвиги
     param->stack_status =  STACK_SUCCESS;
 
