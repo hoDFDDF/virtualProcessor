@@ -52,7 +52,21 @@ void cleanStrings(char* string){
     if ((pos = strchr(string, '\r')) != NULL ) *pos = '\0';
     if ((pos = strchr(string, '\n')) != NULL ) *pos = '\0';
 }
-
+//void FillJmpArray(JMPS* jmp, ProcessorInstructions* instruction){
+//    char jmp_input_str[20];
+//    int nArguments = sscanf(instruction->instr_buffer[instruction->index_instr_buffer],);
+//     if (nArguments == 1) {
+//        for (size_t jmp_index = 0; jmp_index < jmp_arr_size; jmp_index++) {
+//            int jmp_check = strcmp(jmp_arr[jmp_index ].jump_name, jmp);
+//            if (jmp_check == 0) { 
+//                jmp->jump_name = jmp_input_str; 
+//                jmp->IP = instraction->index_str;
+//                break;
+//            }
+//        }
+//    }
+//     
+//}
 size_t ParseArgs(char* str_command_name, char* command_param, ProcessorInstructions* instruction){
 
     int nArguments = sscanf(instruction->instr_buffer[instruction->index_instr_buffer], "%s %s",
@@ -65,15 +79,16 @@ size_t ParseArgs(char* str_command_name, char* command_param, ProcessorInstructi
     } else {
         instruction->str_arg = 0;
     }
-    instruction->index_instr_buffer++;
+    
     return nArguments;//залупа, нахую тогда записывать в структуру.
 }
 
 Instractions CommandParser(ProcessorInstructions* instruction, Command* cmd){
-
+    
     char str_command_name[40] = {0};
     char command_param[32] = {0};
     size_t nArguments = ParseArgs(str_command_name, command_param, instruction);
+    size_t current_index = instruction->index_instr_buffer;
     // TODO: ParseInstruction(str_command_name, command_param) {
     // TODO: for const Command* const commands[12] = {{PUSH, "PUSH"}}     
     Instractions enum_command_name = NO_INSTRUCTION;
@@ -98,14 +113,13 @@ Instractions CommandParser(ProcessorInstructions* instruction, Command* cmd){
             }
         }
     }
-
+    
     if (nArguments == 2 && instruction->reg_val == NO_REGS) {
         instruction->val = atoi(command_param);
     }
 
     fprintf(stdout, "INDEX_INSTR_BUFFER = [%d]\n",  instruction->index_instr_buffer);
-    fprintf(stdout, "THIS COMMAND = {%s}\n", instruction->instr_buffer[instruction->index_instr_buffer]);
-    
+   fprintf(stdout, "THIS COMMAND = {%s}\n", instruction->instr_buffer[current_index]);
     fprintf(stderr, "commamd_code = %d\n", enum_command_name);
     
     fprintf(stderr, "comand_name = %s\n", str_command_name);
@@ -113,11 +127,13 @@ Instractions CommandParser(ProcessorInstructions* instruction, Command* cmd){
     fprintf(stdout, "HOW MANY ARGS = [%d]\n", nArguments);
     fprintf(stdout,  "VALUE OF REG ARG = [%d]", instruction->reg_val);
 
+    instruction->index_instr_buffer++;
+
     return enum_command_name;
 }
 
 void FillCodeArray(ProcessorInstructions* instruction, AsmFileParams* asm_file_param, Command* cmd){
-    instruction->code_array = (int*)calloc(256, sizeof(int));
+    instruction->code_array = (int*)calloc(528, sizeof(int));
 
     instruction->index_instr_buffer = 0;
     size_t file_string_count = asm_file_param->asm_nStrings;

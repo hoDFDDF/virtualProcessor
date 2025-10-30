@@ -10,11 +10,12 @@
             __FILE__, __LINE__, __func__); \
                                     
 
-
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
+struct  Register;
 
 StackErr_t StackDump(Stack_t* param);
 StackErr_t StackVerify(Stack_t* param);

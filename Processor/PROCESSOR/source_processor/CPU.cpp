@@ -27,7 +27,7 @@ void ReadByteCode(ByteCodeFile* byte_code){
     for (size_t index = 0; index < byte_code->nStrings; index++) {
         fprintf(stdout, "%s ", byte_code->byteCode_buffer_ptr[index]);
     }
-    fclose(byte_code_file_ptr);    
+    fclose(byte_code_file_ptr);
 }
 
 void GetByteCodeFileNumStrings(ByteCodeFile* byte_code){
@@ -46,6 +46,7 @@ void GetByteCodeFileNumStrings(ByteCodeFile* byte_code){
     }
     fclose(byte_code_file_ptr);
 }
+
 
 
 //////////////////////REGISTERS/////////////////

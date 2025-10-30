@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include "AsmFileParametrs.h"
 
-
 #define RESET_ALL       "\x1b[0m"
 #define COLOR_BLACK     "\x1b[30m"
 #define COLOR_RED       "\x1b[31m"
@@ -55,7 +54,7 @@ struct ProcessorInstructions{
     char** instr_buffer;
     size_t code_array_size;
     size_t index_instr_buffer;
-    char* temp_buffer_command_name ;
+    char* temp_buffer_command_name;
     size_t str_arg;
     Regs reg_val;
 };
@@ -66,6 +65,10 @@ struct Registers{
 struct Command{
     Instractions enum_cmnd_name;
     const char* cmnd_name;
+};
+struct JMPS{
+    char* jump_name;
+    int IP;
 };
 struct BuffersStorage{
     char* command_buffer;
@@ -82,11 +85,17 @@ const Command commands[command_arr_size] = {{PUSH,"PUSH"},
                                             
                                                     
 };
+
 const size_t register_array_size = 3;
 const Registers registers[register_array_size] = {{RAX, "RAX"},
                                                 {RBX, "RBX"},
                                                 {RCX, "RCX"}
 }; 
+
+//const size_t jmp_arr_size = 3;
+//const JMPS jmp_arr[jmp_arr_size] = { {":5", 0},
+//                                     {"", 0}
+//};
 
 size_t ParseArgs(char* str_command_name, char* command_param, ProcessorInstructions* instruction);                                        
 void ReadTextFromAsmFile(ProcessorInstructions* instruction, AsmFileParams* asm_file_param);
