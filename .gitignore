@@ -1,0 +1,4 @@
+.vscode
+*.exe
+Processor/build
+Assembler/assembler_build
